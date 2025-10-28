@@ -1,0 +1,4 @@
+hello = "Hello!"
+favorite_number = 7
+around_the_world = "Around the world, around the world\n" * 144
+googol = 10**100
