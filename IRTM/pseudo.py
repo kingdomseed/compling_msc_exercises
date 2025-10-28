@@ -1,4 +1,5 @@
 import re
+import time
 
 def tokenize(text: str) -> list[str]:
     """Splits the input text into tokens."""
@@ -8,11 +9,21 @@ def tokenize(text: str) -> list[str]:
 
     return tokenized_list
 
-text_test = "O’Really isn’t in S."
-print(tokenize(text_test))  # Example usage
-
+# Load the file once
 with open("/Users/jholt/jupyter_nb/IRTM/wiki-en-flower.txt", "r") as file:
-    text = file.read()
-result = tokenize(text)
-print(result[:100])  # Print first 100 tokens from the file
+    original_text = file.read()
+
+# Test with multiples of the original
+multipliers = [1, 2, 4, 8]
+
+print("Testing O(n) complexity:\n")
+for mult in multipliers:
+    test_text = original_text * mult
+    
+    start = time.time()
+    result = tokenize(test_text)
+    end = time.time()
+    
+    elapsed = end - start
+    print(f"Multiplier: {mult:2d}x | Size: {len(test_text):8d} chars | Time: {elapsed:.6f} sec | Tokens: {len(result)}")
 
