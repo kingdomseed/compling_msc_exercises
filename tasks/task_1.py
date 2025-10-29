@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Programming for Computational Linguistics
+    Task 1: Loading and reading the first program
+   
+   Source: https://automatetheboringstuff.com/chapter1/
+"""
+ 
+# This program says hello and asks for my name.
+
+print('Hello world!')
+print('What is your name?')    # ask for their name
+myName = input() # reads console
+print('It is good to meet you, ' + myName)
+print('The length of your name is:')
+print(len(myName)) # number of characters}
+print('What is your age?')    # ask for their age
+myAge = input()
+print('You will be ' + str(int(myAge) + 1) + ' in a year.')
+
+## TASK 1
+# Extend the code so that it:
+# 1) informs in how many years I will be 80
+# 2) asks about my surname and says goodbye with a full name
+
+print('In ' + str(80 - int(myAge)) + ' years you will be 80 years old.')
+print('What is your surname?')
+mySurname = input()
+print('It was nice to meet you, ' + myName + ' ' + mySurname + '.')
