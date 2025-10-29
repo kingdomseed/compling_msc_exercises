@@ -3,7 +3,7 @@ import time
 
 def tokenize(text: str) -> list[str]:
     """Splits the input text into tokens."""
-    tokenized_list = []
+    tokenized_list: list[str] = []
     for token in re.split(r'\W+', text):
         tokenized_list.append(token)
 
