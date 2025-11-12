@@ -1,6 +1,6 @@
 from fragments import get_random_text
 
-def easy_password(length: int = 1):
+def easy_password(length):
     password = ""
     while length > len(password):
         text = get_random_text()
