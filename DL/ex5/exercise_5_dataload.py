@@ -31,7 +31,7 @@ class AudioData(Dataset):
         else:
             label = -1
         # convert nparray to tensor but print the shapes before returning
-        print(f"Loading {audio_path} with shape {nparray.shape}")
+        print(f"Loading {audio_path} with shape {nparray.shape} and sample rate {sr}")
         return torch.tensor(nparray), label
 
     @staticmethod
