@@ -59,7 +59,16 @@ def tokenize_sentences(lines):
     sentences = []
     tokens = []
     """Add Code"""
+    # I need to tokenize the sentences line by line
+    # And then I need to tokenize the words in each sentence
+    # I think this takes two loops but why can't I do it in one?
+    for line in lines:
+        sentences.extend(nltk.sent_tokenize(line))
+        for word in nltk.word_tokenize(line):
+            tokens.extend(nltk.word_tokenize(word))
     
+    # print(f"Sentences: {sentences[:10]}")
+    print(f"Tokens: {tokens[:10]}")
     return sentences, tokens
 
 def process_tokens(tokens):
@@ -82,14 +91,14 @@ def compute_statistics(sentences, tokens, lemmas, pos_tags):
     """Compute various statistics for the corpus."""
     """Add Code: calculations"""
     sentence_lengths = []
-    num_sentences = 
-    num_tokens = 
-    num_types = 
+    num_sentences = 0
+    num_tokens = 0
+    num_types = 0
     
-    types_tokens_ratio = 
-    avg_sentence_length = 
-    min_sentence_length = 
-    max_sentence_length = 
+    types_tokens_ratio = 0
+    avg_sentence_length = 0
+    min_sentence_length = 0
+    max_sentence_length = 0
     
     return {
         "num_sentences": num_sentences,
@@ -151,9 +160,17 @@ def process_corpora(txt_files):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python CorpusAnalysis.py <path_to_txt_file1> <path_to_txt_file2> ...")
-        sys.exit(1)
+    # Option 1: use command-line arguments (commented out)
+    # if len(sys.argv) < 2:
+    #     print("Usage: python CorpusAnalysis_exercise.py <path_to_txt_file1> <path_to_txt_file2> ...")
+    #     sys.exit(1)
+    # txt_files = sys.argv[1:]
 
-    txt_files = sys.argv[1:]
+    # Option 2: automatically load all .txt files from the local corpus_files directory
+    corpus_dir = os.path.join(os.path.dirname(__file__), "corpus_files")
+    txt_files = [
+        os.path.join(corpus_dir, fname)
+        for fname in os.listdir(corpus_dir)
+        if fname.lower().endswith(".txt")
+    ]
     process_corpora(txt_files)
