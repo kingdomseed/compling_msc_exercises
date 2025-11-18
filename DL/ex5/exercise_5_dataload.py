@@ -22,6 +22,7 @@ class AudioData(Dataset):
 
     # Load one Wave file to a tensor
     def __getitem__(self, index):
+        # index is the index of the file to load
         audio_path = self.wav_paths[index]
         nparray, sr = librosa.load(audio_path, sr=self.sample_rate)
         stem = Path(audio_path).stem
@@ -38,8 +39,8 @@ class AudioData(Dataset):
         audio_list = []
         label_list = []
         for batch_item in batch:
-            audio_list.append(batch_item[0])
-            label_list.append(batch_item[1])
+            audio_list.append(batch_item[0]) # always the audio data tensor
+            label_list.append(batch_item[1]) # always the label
 
         # Pad sequences to the same length
         max_len = max([audio.shape[0] for audio in audio_list])
