@@ -94,15 +94,15 @@ def process_tokens(tokens):
 def compute_statistics(sentences, tokens, lemmas, pos_tags):
     """Compute various statistics for the corpus."""
     """Add Code: calculations"""
-    sentence_lengths = []
+    sentence_lengths = [len(word_tokenize(sentence)) for sentence in sentences]
     num_sentences = len(sentences)
     num_tokens = len(tokens)
     num_types = len(set(lemmas))
     
     types_tokens_ratio = num_types / num_tokens
-    avg_sentence_length = sum(len(sentence) for sentence in sentences) / num_sentences
-    min_sentence_length = min(len(sentence) for sentence in sentences)
-    max_sentence_length = max(len(sentence) for sentence in sentences)
+    avg_sentence_length = sum(sentence_lengths) / num_sentences
+    min_sentence_length = min(sentence_lengths)
+    max_sentence_length = max(sentence_lengths)
     
     return {
         "num_sentences": num_sentences,
@@ -123,13 +123,25 @@ def visualize_statistics(stats, corpus_name):
     """Visualize distributions and statistics."""
     
     # Plot for Sentence length distribution
-    """Add Code"""
+    plt.hist(stats['sentence_lengths'], bins=20)
+    plt.title(f"Sentence length distribution for {corpus_name}")
+    plt.xlabel("Sentence length")
+    plt.ylabel("Frequency")
+    plt.show()
 
     # Plot for Top 20 lemmas
-    """Add Code"""
+    plt.bar(stats['lemma_distribution'].keys(), stats['lemma_distribution'].most_common(20))
+    plt.title(f"Top 20 lemmas for {corpus_name}")
+    plt.xlabel("Lemma")
+    plt.ylabel("Frequency")
+    plt.show()
 
     # Plot for POS tag distribution
-    """Add Code"""
+    plt.bar(stats['pos_distribution'].keys(), stats['pos_distribution'].values())
+    plt.title(f"POS tag distribution for {corpus_name}")
+    plt.xlabel("POS tag")
+    plt.ylabel("Frequency")
+    plt.show()
 
 
 def analyze_corpus(file_path, corpus_name):
