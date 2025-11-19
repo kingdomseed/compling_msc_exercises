@@ -1,7 +1,7 @@
 
 # Returns the last element of list l
 def last(l: list):
-    return 
+    return l[-1]
 
 # Returns the middle element of list l
 def middle(l: list):
