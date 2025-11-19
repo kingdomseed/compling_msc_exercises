@@ -130,11 +130,15 @@ def visualize_statistics(stats, corpus_name):
     plt.show()
 
     # Plot for Top 20 lemmas
-    plt.bar(stats['lemma_distribution'].keys(), stats['lemma_distribution'].most_common(20))
-    plt.title(f"Top 20 lemmas for {corpus_name}")
-    plt.xlabel("Lemma")
-    plt.ylabel("Frequency")
-    plt.show()
+    top_20_lemmas = stats['lemma_distribution'].most_common(20)
+    if top_20_lemmas:
+        lemmas, counts = zip(*top_20_lemmas)
+        plt.bar(lemmas, counts)
+        plt.title(f"Top 20 lemmas for {corpus_name}")
+        plt.xlabel("Lemma")
+        plt.ylabel("Frequency")
+        plt.xticks(rotation=45, ha='right')
+        plt.show()
 
     # Plot for POS tag distribution
     plt.bar(stats['pos_distribution'].keys(), stats['pos_distribution'].values())
