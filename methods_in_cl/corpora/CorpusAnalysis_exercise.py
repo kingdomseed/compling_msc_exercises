@@ -82,9 +82,12 @@ def process_tokens(tokens):
     """Get list of lemmas and part-of-speech tags, do not include punctuation"""
     lemmas = []
     pos_tags = []
-    """Add Code"""
+    for word in tokens:
+        if word.lower() not in stop_words and not punctuation_regex.fullmatch(word):
+            lemmas.append(lemmatizer.lemmatize(word))
+        if not punctuation_regex.fullmatch(word):
+            pos_tags.append(pos_tag([word])[0][1])
     
-
     return lemmas, pos_tags
 
 
@@ -92,14 +95,14 @@ def compute_statistics(sentences, tokens, lemmas, pos_tags):
     """Compute various statistics for the corpus."""
     """Add Code: calculations"""
     sentence_lengths = []
-    num_sentences = 0
-    num_tokens = 0
-    num_types = 0
+    num_sentences = len(sentences)
+    num_tokens = len(tokens)
+    num_types = len(set(lemmas))
     
-    types_tokens_ratio = 0
-    avg_sentence_length = 0
-    min_sentence_length = 0
-    max_sentence_length = 0
+    types_tokens_ratio = num_types / num_tokens
+    avg_sentence_length = sum(len(sentence) for sentence in sentences) / num_sentences
+    min_sentence_length = min(len(sentence) for sentence in sentences)
+    max_sentence_length = max(len(sentence) for sentence in sentences)
     
     return {
         "num_sentences": num_sentences,
