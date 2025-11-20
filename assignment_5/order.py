@@ -1,4 +1,6 @@
 
+# Hint: basic components only; look at how Bubble Sort works
+
 def order(words: list[str]):
     return words
 
