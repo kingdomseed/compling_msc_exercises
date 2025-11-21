@@ -1,0 +1,16 @@
+# Root requirements.txt - includes all dependencies for school assignments
+# References existing requirements files and adds missing packages
+
+# Include existing DL requirements
+
+# Additional third-party packages found across all assignment folders
+nltk
+matplotlib
+pandas
+librosa
+chardet
+numpy==2.3.4
+pytorch==2.7.0
+
+# Note: Standard library modules (os, sys, re, string, pathlib, collections, 
+# typing, math, random, turtle, operator, glob) are not listed as they are built-in
