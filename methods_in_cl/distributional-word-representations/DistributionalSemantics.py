@@ -9,13 +9,14 @@ from nltk import pos_tag, WordNetLemmatizer
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 from scipy.linalg import svd
+from scipy.spatial.distance import cosine
 
 from CorpusAnalysis_solution import (
     load_corpus,
 )  # solution file from previous corpus analysis assignment
 
 
-def tokenize_sentences(lines: List[str]) -> Tuple[List[str], List[str]]:
+def tokenize_sentences(lines: List[str]) -> List[List[str]]:
     """
     Tokenize the lines into sentences and words.
 
@@ -111,14 +112,39 @@ def create_cooccurrence_matrix(
 
     # go over all sentences and the words in them,
     # fill up word_index and coocs
-    """ ADD CODE HERE """
+    """ MY CODE HERE """
+    for sentence in C:
+        # sentence-tokenize line
+        for i, word_token in enumerate(sentence):
+            if word_token in W:
+                if word_token not in coocs:
+                    coocs[word_token] = {}
+                l = max(0, i - N)
+                r = min(len(sentence) - 1, i + N)
+                for k in range(l, r + 1):  # +1 to include position r
+                    context_word = sentence[k]
+                    if context_word != word_token: 
+                        if context_word not in word_index:
+                            word_index[context_word] = j
+                            j += 1
+                        if context_word not in coocs[word_token]:
+                            coocs[word_token][context_word] = 1
+                        else: 
+                            coocs[word_token][context_word] += 1
 
     # initialize the co-occurrence matrix M with zeros
-    M = []  # placeholder
-    """ ADD CODE HERE """
+    """ MY CODE HERE """
+    M = [[0] * len(word_index) for _ in range(len(W))]
+    
 
     # now fill the co-occurrence matrix M
-    """ ADD CODE HERE """
+    """ MY CODE HERE """
+    for i, wt in enumerate(W):
+        for context_word, c in coocs[wt].items():
+            j = word_index[context_word]
+            M[i][j] = c
+
+    print(f"Columns: {len(M)}, Rows: {len(M[0])}")
 
     return M
 
@@ -145,6 +171,12 @@ def apply_svd(M, n_dims: Optional[int] = None) -> List[List[float]]:
     # convert to list
     M_svd = M_svd.tolist()
 
+    print(f"SVD applied. New dimensions: {len(M_svd)} x {len(M_svd[0])}")
+    # print columns and rows for the 8x8 matrix with their content
+    for i, row in enumerate(M_svd):
+        if i < 8:
+            print(f"Row {i}: {row}")
+
     return M_svd
 
 
@@ -166,14 +198,19 @@ def calculate_cosine_similarity(a: List[float], b: List[float]) -> float:
            either vector is zero.
     """
 
-    cos_sim = 0.0  # placeholder
-    """ ADD CODE HERE """
+    cos_sim = 1 - cosine(a, b)
+
 
     return cos_sim
 
 
 if __name__ == "__main__":
-    corpora = [c for c in os.listdir() if c.endswith(".txt")]
+    # Get the directory where this script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    corpus_dir = os.path.join(script_dir, "corpus_files")
+    
+    # corpora = [c for c in os.listdir(corpus_dir) if c.endswith(".txt")]
+    corpora = ["ACL_partial_abstract_corpus.txt"]  # Just test with one corpus
 
     stop_words = set(stopwords.words("english"))
 
@@ -183,26 +220,56 @@ if __name__ == "__main__":
 
         # preprocessing
         print("Processing corpus:", corpus)
-        corpus_lines = load_corpus(os.path.join("data/corpora", corpus))
+        corpus_lines = load_corpus(os.path.join(corpus_dir, corpus))
         print("Done loading.")
         tokenized_sentences = tokenize_sentences(corpus_lines)
         print("Done tokenizing.")
         lemmatized_sentences, lemma_counts = process_tokens(tokenized_sentences)
         print("Done preprocessing tokens.")
-        # select target words (noun lemmas with at least 50 occurrences)
-        target_words = {}  # placeholder
-        """ ADD CODE HERE """
+        # select target words (noun lemmas with at least 15 occurrences)
+        target_words = {}  # placeholder create a loop and use a lemma count threshold
+        """ MY CODE HERE """
+        for lemma, count in lemma_counts.items():
+            if count >= 10:
+                target_words[lemma] = count
+        target_words = set(target_words.keys())
+        print(f"Selected {len(target_words)} target words.")
 
         M = create_cooccurrence_matrix(
-            W=target_words, S=stop_words, C=lemmatized_sentences, N=5
+            W=target_words, C=lemmatized_sentences, N=5
         )
         print("Done creating co-occurrence matrix.")
 
         # apply SVD to reduce dimensionality to 100
-        """ ADD CODE HERE """
+        M_reduced = apply_svd(M, n_dims=100)
 
         # calculate all pairwise cosine similarities
-        """ ADD CODE HERE """
+        all_sims = []
+        for row_i, row_j in combinations(range(len(M_reduced)), 2):
+            vec_i = M_reduced[row_i]
+            vec_j = M_reduced[row_j]
+            cos_sim = calculate_cosine_similarity(vec_i, vec_j)
+            all_sims.append((cos_sim, (row_i, row_j)))
+
+        # sort by cosine similarity (tuples sort by first element by default)
+        all_sims.sort()
+
+        # 10 most dissimilar (smallest cosine)
+        ten_most_dissimilar = all_sims[:10]
+
+        # 10 most similar (largest cosine, reversed for descending order)
+        ten_most_similar = all_sims[-10:][::-1]
+
+        # optionally print all pairwise similarities
+        for cos_sim, (row_i, row_j) in all_sims:
+            print(
+                f"Cosine similarity between word {row_i} and word {row_j}: {cos_sim:.5f}"
+            )
 
         # print the 10 most similar and 10 most dissimilar word pairs
-        """ ADD CODE HERE """
+        print("\nTen most similar word pairs:")
+        for sim, (i, j) in ten_most_similar:
+            print(f"Words {i} and {j} with cosine similarity {sim:.5f}")
+        print("\nTen most dissimilar word pairs:")
+        for sim, (i, j) in ten_most_dissimilar:
+            print(f"Words {i} and {j} with cosine similarity {sim:.5f}")
