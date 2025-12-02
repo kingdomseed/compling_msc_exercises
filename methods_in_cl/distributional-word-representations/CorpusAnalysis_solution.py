@@ -8,7 +8,7 @@ from collections import Counter
 import chardet
 import string
 import re
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, Optional, cast, Any
 import sys
 
 
@@ -25,10 +25,11 @@ def detect_file_encoding(file_path: str) -> str:
     with open(file_path, "rb") as f:
         raw_data = f.read(10000)  # Read the first 10,000 bytes
         result = chardet.detect(raw_data)
-        return result["encoding"]
+        encoding = result.get("encoding") or "utf-8"
+        return encoding
 
 
-def load_corpus(file_path: str) -> List[str]:
+def load_corpus(file_path: str) -> Optional[List[str]]:
     """Load the content of the file with fallback encodings."""
 
     # Detect encoding
@@ -120,7 +121,7 @@ def process_tokens(tokens: List[str]) -> Tuple[List[str], List[str]]:
 
 def compute_statistics(
     sentences: List[str], tokens: List[str], lemmas: List[str], pos_tags: List[str]
-) -> Dict[str, Union[Counter, int, float]]:
+) -> Dict[str, Union[Counter, int, float, List[int]]]:
     """Compute various statistics for the corpus.
 
     Parameters:
@@ -171,7 +172,7 @@ def compute_statistics(
 
 
 def visualize_statistics(
-    stats: Dict[str, Union[Counter, int, float]], corpus_name: str
+    stats: Dict[str, Union[Counter, int, float, List[int]]], corpus_name: str
 ):
     """Visualize distributions and statistics.
 
@@ -182,10 +183,11 @@ def visualize_statistics(
     """
 
     # Plot for Sentence length distribution
+    sentence_lengths = cast(List[int], stats["sentence_lengths"])
     plt.figure(figsize=(10, 6))
     plt.hist(
-        stats["sentence_lengths"],
-        bins=range(1, max(stats["sentence_lengths"]) + 1),
+        sentence_lengths,
+        bins=range(1, max(sentence_lengths) + 1),
         alpha=0.7,
         color="blue",
     )
@@ -195,7 +197,8 @@ def visualize_statistics(
     plt.show()
 
     # Plot for Top 20 lemmas
-    top_lemmas = stats["lemma_distribution"].most_common(20)
+    lemma_distribution = cast(Counter[str], stats["lemma_distribution"])
+    top_lemmas = lemma_distribution.most_common(20)
     plt.figure(figsize=(10, 6))
     plt.bar(
         [lemma for lemma, _ in top_lemmas],
@@ -210,11 +213,12 @@ def visualize_statistics(
     plt.show()
 
     # Plot for POS tag distribution
+    pos_distribution = cast(Counter[str], stats["pos_distribution"])
     plt.figure(figsize=(10, 6))
     plt.xticks(rotation=90)
     plt.bar(
-        stats["pos_distribution"].keys(),
-        stats["pos_distribution"].values(),
+        list(pos_distribution.keys()),
+        list(pos_distribution.values()),
         alpha=0.7,
         color="red",
     )
@@ -285,6 +289,8 @@ if __name__ == "__main__":
 
     corpus_file = "MovieCorpus.txt"
     corpus_lines = load_corpus(corpus_file)
+    if corpus_lines is None:
+        sys.exit(1)
     sentences, tokens = tokenize_sentences(corpus_lines)
     lemmas, pos_tags = process_tokens(tokens)
     stats = compute_statistics(sentences, tokens, lemmas, pos_tags)

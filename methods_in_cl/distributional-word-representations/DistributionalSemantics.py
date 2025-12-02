@@ -24,8 +24,9 @@ def tokenize_sentences(lines: List[str]) -> List[List[str]]:
     lines (List[str]): A list of strings where each string is a line of text.
 
     Returns:
-    Tuple[List[List[str]]:
+    List[List[str]:
         - A list of sentences which are tokenized into tokens (words)
+        - A nested list of tokens (words) extracted from the sentences.
     """
     tokenized_sentences = []
 
@@ -71,7 +72,7 @@ def process_tokens(
         lemmatized_tokenized_sentences.append([])
         for token in sentence:
             # skip punctuation and stop words
-            if not punctuation_regex.fullmatch(token) or token.lower() in stop_words:
+            if not punctuation_regex.fullmatch(token) and token.lower() not in stop_words:
                 # add lemma to new sentence version
                 lemma = lemmatizer.lemmatize(token.lower())
                 lemmatized_tokenized_sentences[-1].append(lemma)
@@ -120,31 +121,47 @@ def create_cooccurrence_matrix(
                 if word_token not in coocs:
                     coocs[word_token] = {}
                 l = max(0, i - N)
-                r = min(len(sentence) - 1, i + N)
-                for k in range(l, r + 1):  # +1 to include position r
+                r = min(len(sentence), i + N + 1) # r is not included
+                for k in range(l, r): 
                     context_word = sentence[k]
+                    # if the context word is not the target word itself
                     if context_word != word_token: 
+                        # make sure the word has a column index
                         if context_word not in word_index:
                             word_index[context_word] = j
                             j += 1
+                        # update co-occurrence count
                         if context_word not in coocs[word_token]:
                             coocs[word_token][context_word] = 1
                         else: 
                             coocs[word_token][context_word] += 1
+                        # fills the two dictionaries we need for our co-occurrence matrix
 
     # initialize the co-occurrence matrix M with zeros
     """ MY CODE HERE """
     M = [[0] * len(word_index) for _ in range(len(W))]
+    # or
+    # M = []
+    # for target_word in W:
+    #     M.append([])
+    #     for context_word in word_index:
+    #         M[-1].append(0)
     
 
     # now fill the co-occurrence matrix M
+    # For each target word (row i), look up its context words in coocs,
+    # find the column index j for each context word, and set M[i][j] to the count.
     """ MY CODE HERE """
-    for i, wt in enumerate(W):
-        for context_word, c in coocs[wt].items():
-            j = word_index[context_word]
-            M[i][j] = c
+    for i, t_word in enumerate(W):
+        for c_word in coocs[t_word].keys():
+            j = word_index[c_word]
+            M[i][j] = coocs[t_word][c_word]
+    #for i, wt in enumerate(W):
+    #    for context_word, c in coocs[wt].items():
+    #        j = word_index[context_word]
+    #        M[i][j] = c
 
-    print(f"Columns: {len(M)}, Rows: {len(M[0])}")
+    # print(f"Columns: {len(M)}, Rows: {len(M[0])}")
 
     return M
 
@@ -201,7 +218,7 @@ def calculate_cosine_similarity(a: List[float], b: List[float]) -> float:
     cos_sim = 1 - cosine(a, b)
 
 
-    return cos_sim
+    return float(cos_sim)
 
 
 if __name__ == "__main__":
@@ -220,7 +237,7 @@ if __name__ == "__main__":
 
         # preprocessing
         print("Processing corpus:", corpus)
-        corpus_lines = load_corpus(os.path.join(corpus_dir, corpus))
+        corpus_lines = load_corpus(os.path.join(corpus_dir, corpus)) or []
         print("Done loading.")
         tokenized_sentences = tokenize_sentences(corpus_lines)
         print("Done tokenizing.")
@@ -229,8 +246,11 @@ if __name__ == "__main__":
         # select target words (noun lemmas with at least 15 occurrences)
         target_words = {}  # placeholder create a loop and use a lemma count threshold
         """ MY CODE HERE """
+        if len(target_words) == 0:
+            print("No target words selected yet, selecting now...")
+        
         for lemma, count in lemma_counts.items():
-            if count >= 10:
+            if count >= 50:
                 target_words[lemma] = count
         target_words = set(target_words.keys())
         print(f"Selected {len(target_words)} target words.")
@@ -238,7 +258,7 @@ if __name__ == "__main__":
         M = create_cooccurrence_matrix(
             W=target_words, C=lemmatized_sentences, N=5
         )
-        print("Done creating co-occurrence matrix.")
+        print(f"Done creating co-occurrence matrix. M: {M[0][:10]}")
 
         # apply SVD to reduce dimensionality to 100
         M_reduced = apply_svd(M, n_dims=100)
@@ -261,10 +281,10 @@ if __name__ == "__main__":
         ten_most_similar = all_sims[-10:][::-1]
 
         # optionally print all pairwise similarities
-        for cos_sim, (row_i, row_j) in all_sims:
-            print(
-                f"Cosine similarity between word {row_i} and word {row_j}: {cos_sim:.5f}"
-            )
+       # for cos_sim, (row_i, row_j) in all_sims:
+            # print(
+                # f"Cosine similarity between word {row_i} and word {row_j}: {cos_sim:.5f}"
+            # )
 
         # print the 10 most similar and 10 most dissimilar word pairs
         print("\nTen most similar word pairs:")
