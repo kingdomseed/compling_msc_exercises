@@ -281,7 +281,7 @@ if __name__ == "__main__":
         ten_most_similar = all_sims[-10:][::-1]
 
         # optionally print all pairwise similarities
-       # for cos_sim, (row_i, row_j) in all_sims:
+        # for cos_sim, (row_i, row_j) in all_sims:
             # print(
                 # f"Cosine similarity between word {row_i} and word {row_j}: {cos_sim:.5f}"
             # )
