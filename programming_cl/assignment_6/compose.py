@@ -15,7 +15,7 @@ def can_be_composed(word1, word2):
         # we need a 0 as a default value in case the letter is not in word2
         # in order to return a valid comparison between two ints
         # otherwise we would be comparing None to an int
-        if word1asdict.get(letter) > word2asdict.get(letter, 0):
+        if word1asdict[letter] > word2asdict.get(letter, 0):
             return False
 
     return True
@@ -25,9 +25,9 @@ def can_be_composed(word1, word2):
 # is the key, occurrences is the value
 
 # Test cases
-print(can_be_composed("python", "pantyhose"))
-print(can_be_composed("python", "ponytail"))
-print(can_be_composed("code", "docent"))
-print(can_be_composed("messy", "reassembly"))
-print(can_be_composed("computational", "alphanumeric"))
-print(can_be_composed("linguistics", "criminologists"))
+# print(can_be_composed("python", "pantyhose"))
+# print(can_be_composed("python", "ponytail"))
+# print(can_be_composed("code", "docent"))
+# print(can_be_composed("messy", "reassembly"))
+# print(can_be_composed("computational", "alphanumeric"))
+# print(can_be_composed("linguistics", "criminologists"))
