@@ -45,7 +45,7 @@ def load_embeddings_from_file(emb_file: str) -> Dict[str, List[float]]:
 
 
 def compute_analogy_vector(
-    embeddings: List[str],
+    embeddings: Dict[str, List[float]],
     base_term: str,
     subtract_term: str,
     add_term: str,
@@ -62,8 +62,8 @@ def compute_analogy_vector(
     vector, excluding the terms used in the analogy.
 
     Args:
-        embeddings (List[str]): A list of word embeddings where each word
-                                is associated with its vector representation.
+        embeddings (Dict[str, List[float]]): A dictionary mapping words to their
+                                corresponding vector representations.
         base_term (str): The base term.
         subtract_term (str): The term to be subtracted.
         add_term (str): The term to be added.
@@ -73,13 +73,18 @@ def compute_analogy_vector(
     """
     # Retrieve embeddings for the specified terms
 
-    # --- YOUR CODE HERE ---
+    # --- MY CODE HERE ---
+    base_embedding = embeddings[base_term]
+    subtract_embedding = embeddings[subtract_term]
+    add_embedding = embeddings[add_term]
 
     result_vector = []
 
     # for each dimension in the vector, compute the analogy operation
 
-    # --- YOUR CODE HERE ---
+    # --- MY CODE HERE ---
+    for i in range(len(base_embedding)):
+        result_vector.append(base_embedding[i] - subtract_embedding[i] + add_embedding[i])
 
     return result_vector
 
@@ -103,6 +108,9 @@ def compute_similarity_ranking(
     similarity_ranking = []
 
     # --- YOUR CODE HERE ---
+    for word, embedding in embeddings.items():
+        similarity = calculate_cosine_similarity(v, embedding)
+        similarity_ranking.append((word, similarity))
 
     # sort the ranking list by similarity in non-ascending order
     similarity_ranking.sort(key=lambda x: x[1], reverse=True)
@@ -132,6 +140,13 @@ def report_analogy_results(
     """
 
     # --- YOUR CODE HERE ---
+    for base, subtract, add in analogy_words:
+        result = compute_analogy_vector(embeddings, base, subtract, add)
+        most_similar = compute_similarity_ranking(result, embeddings)
+        if add or subtract or base == most_similar[0][0]:
+            print(f"{base} - {subtract} + {add} => {most_similar[1][0]}")
+        else:
+            print(f"{base} - {subtract} + {add} => {most_similar[0][0]}")
 
 
 # - - - - - - - - - - - phrase embeddings - - - - - - - - - - -
@@ -187,7 +202,19 @@ def compose_phrase(
 
     p_embedding = []
 
-    # --- YOUR CODE HERE ---
+    # --- MY CODE HERE ---
+
+    if comp_method == "addition":
+        for vector_1, vector_2 in zip(w1_embedding, w2_embedding):
+            p_embedding.append(vector_1 + vector_2)
+    elif comp_method == "multiplication":
+        for vector_1, vector_2 in zip(w1_embedding, w2_embedding):
+            p_embedding.append(vector_1 * vector_2)
+    elif comp_method == "concatenation":
+        p_embedding = w1_embedding + w2_embedding
+    else:
+        raise ValueError(f"Unknown composition method: {comp_method}")
+
 
     return p_embedding
 
@@ -210,10 +237,17 @@ def calculate_phrase_embeddings(
                                              methods, and the values are the corresponding
                                              phrase embeddings.
     """
+    # --- MY CODE HERE ---
     phrase_embeddings = {}
-
-    # --- YOUR CODE HERE ---
-
+    for phrase in target_phrases:
+        addition = compose_phrase(embeddings, phrase[0], phrase[1], "addition")
+        multiplication = compose_phrase(embeddings, phrase[0], phrase[1], "multiplication")
+        concatenation = compose_phrase(embeddings, phrase[0], phrase[1], "concatenation")
+        phrase_embeddings[phrase] = {
+            "addition": addition,
+            "multiplication": multiplication,
+            "concatenation": concatenation,
+        }
     return phrase_embeddings
 
 
@@ -238,6 +272,12 @@ def report_semantic_similarity(
     """
 
     # --- YOUR CODE HERE ---
+    for phrase, method_dict in phrase_embeddings.items():
+        for method, phrase_vec in method_dict.items():
+            similarity_first_word = calculate_cosine_similarity(phrase_vec, embeddings[phrase[0]])
+            similarity_second_word = calculate_cosine_similarity(phrase_vec, embeddings[phrase[1]])
+            print(f"{phrase} - {method} => {similarity_first_word}, {similarity_second_word}")
+
 
 
 def report_nearest_neighbors(
@@ -260,7 +300,10 @@ def report_nearest_neighbors(
     """
 
     # --- YOUR CODE HERE ---
-
+    for phrase, method_dict in phrase_embeddings.items():
+        for method, phrase_vec in method_dict.items():
+            ranking = compute_similarity_ranking(phrase_vec, embeddings)
+            print(f"{phrase} - {method} => {ranking[:5]}")
 
 if __name__ == "__main__":
     # define analogies for vector arithmetics
@@ -281,7 +324,7 @@ if __name__ == "__main__":
         "V": ["drive", "see"],
     }
 
-    for embedding_file in ["w2v_top2kGN.txt", "GloVe_top2kGN.txt"]:
+    for embedding_file in ["w2v_neg300_top2kGN.txt", "GloVe_42B_300_top2kGN.txt"]:
 
         print("-" * 100)
         print(f"\n--- Using embeddings from file: {embedding_file} ---\n")
