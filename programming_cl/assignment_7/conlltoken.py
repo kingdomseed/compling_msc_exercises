@@ -20,7 +20,7 @@ class ConLLToken:
             return False
     def get_person(self):
         for feature in self.morph.split("|"):
-            if feature.startsWith("Person"):
+            if feature.startswith("Person"):
                 return feature.split("=")[1]
         return None
     
