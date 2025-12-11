@@ -13,8 +13,8 @@ class ConLLToken:
             return True
         else: 
             return False
-    def is_inflected_verb(self):
-        if self.lemma.lower() is self.form.lower():
+    def is_inflected(self):
+        if self.lemma.lower() == self.form.lower():
             return True
         else: 
             return False
@@ -24,7 +24,3 @@ class ConLLToken:
                 return feature.split("=")[1]
         return None
     
-
-# Example usage
-tok1 = ConLLToken("comes", "come", "VERB", "Mood=Ind|Number=Sing|Person=3")
-print("Token 1:", str(tok1))

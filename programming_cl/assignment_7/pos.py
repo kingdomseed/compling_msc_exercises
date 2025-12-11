@@ -21,7 +21,9 @@ def get_unique_pos(filename, builder):
 
         ### HERE -- finish this code
         ### you should use 'tok' and 'result'
-
+        ### Return a list of unique POS tags in Result
+        if tok.pos not in result:
+            result[tok.pos] = tok.morph
         ###
 
     # let's convert the result to list
