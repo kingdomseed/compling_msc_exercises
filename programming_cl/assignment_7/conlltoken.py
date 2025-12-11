@@ -15,9 +15,9 @@ class ConLLToken:
             return False
     def is_inflected(self):
         if self.lemma.lower() == self.form.lower():
-            return True
-        else: 
             return False
+        else: 
+            return True
     def get_person(self):
         for feature in self.morph.split("|"):
             if feature.startswith("Person"):
