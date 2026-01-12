@@ -18,9 +18,30 @@ def squares(nums: list[int]) -> list[int]:
     rest_squares = squares(rest)
     return [el * el] + rest_squares
 
+# num_zeros(n) accepts a positive(!) integer n as a parameter, and returns the number of zeros in that
+# number’s decimal representation recursively.
 def num_zeroes(n: int) -> int:
-    # Return the number of zero digits in the absolute value of n.
-    return 0
+    n_abs = abs(n)
+
+    # Base case(s)
+    if n_abs == 0:
+        return 1  # "0" has one zero digit
+    if n_abs < 10:
+        return 0  # single non-zero digit has no zero digits
+
+    # Step 1: peel off last digit
+    last_digit = n_abs % 10
+
+    # Step 2: contribute 1 if that digit is zero, else 0
+    zeros_in_last_digit = 0
+    if last_digit == 0:
+        zeros_in_last_digit = 1
+
+    # Step 3: remove last digit using integer division
+    remaining_digits = n_abs // 10
+
+    # Step 4: recursive call on remaining digits and add them
+    return zeros_in_last_digit + num_zeroes(remaining_digits)
 
 # product tests
 print(product([2, 3, 4]))  # 24
