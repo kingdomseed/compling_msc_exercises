@@ -61,3 +61,10 @@ optimizer = optim.SGD(model.parameters(), lr=0.01)
 optimizer.step()
 
 print(optimizer)
+
+# Layer Initialization
+layer = nn.Linear(64, 128)
+print(layer.weight.min())
+print(layer.weight.max())
+print(layer.bias.min())
+print(layer.bias.max())

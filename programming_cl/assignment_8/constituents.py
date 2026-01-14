@@ -8,7 +8,8 @@ class Token:
         '''
         self.pos = pos
         self.word = word
-
+    def __str__(self):
+        return f'({self.pos} {self.word})'
 class Phrase:
     def __init__(self, phrase_type, children):
         '''
@@ -20,3 +21,5 @@ class Phrase:
         '''
         self.phrase_type = phrase_type
         self.children = children
+    def __str__(self):
+        return f'({self.phrase_type} {" ".join(str(child) for child in self.children )})'
