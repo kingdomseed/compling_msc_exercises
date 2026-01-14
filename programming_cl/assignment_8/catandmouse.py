@@ -20,8 +20,3 @@ p_vp = Phrase("VP", [t_chases, p_np2])
 
 # Create the complete sentence phrase
 sent = Phrase("S", [p_np1, p_vp])
-
-# The base is a list of two strings 
-# which is just a Token class
-print(str(t_the))
-print(str(p_vp))
