@@ -8,6 +8,7 @@ Returns:
 # Create the tokens
 t_the = Token("DT", "The")
 t_cat = Token("NN", "cat")
+punct = Token("PUNCT", ".")
 t_chases = Token("VBD", "chases")
 t_mouse = Token("NN", "mouse")
 
@@ -19,4 +20,4 @@ p_np2 = Phrase("NP", [t_the, t_mouse])
 p_vp = Phrase("VP", [t_chases, p_np2])
 
 # Create the complete sentence phrase
-sent = Phrase("S", [p_np1, p_vp])
+sent = Phrase("S", [p_np1, p_vp, punct])

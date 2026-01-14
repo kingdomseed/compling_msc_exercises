@@ -12,7 +12,7 @@ def product(nums: list[int]) -> int:
 def squares(nums: list[int]) -> list[int]:
     # Return a list of the squares of each element in nums.
     if nums == []:
-        return [0]
+        return []
     el = nums[0]
     rest = nums[1:]
     rest_squares = squares(rest)
@@ -20,7 +20,7 @@ def squares(nums: list[int]) -> list[int]:
 
 # num_zeros(n) accepts a positive(!) integer n as a parameter, and returns the number of zeros in that
 # number’s decimal representation recursively.
-def num_zeroes(n: int) -> int:
+def num_zeros(n: int) -> int:
     n_abs = abs(n)
 
     # Base case(s)
@@ -41,9 +41,4 @@ def num_zeroes(n: int) -> int:
     remaining_digits = n_abs // 10
 
     # Step 4: recursive call on remaining digits and add them
-    return zeros_in_last_digit + num_zeroes(remaining_digits)
-
-# product tests
-print(product([2, 3, 4]))  # 24
-print(product([5, 5, 5, 5]))  # 625
-print(product([]))  # 1
+    return zeros_in_last_digit + num_zeros(remaining_digits)
