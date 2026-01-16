@@ -1,3 +1,4 @@
+from audioop import bias
 import torch
 import torch.nn as nn
 import math
@@ -17,9 +18,12 @@ class SelfAttention(nn.Module):
         # initialize three linear project modules
         # in the slide, it should be nn.Linear(in_features=3, out_features=3)
         self.hidden_dim = hidden_dim
-        self.query = nn.Linear(hidden_dim, hidden_dim)
-        self.key = nn.Linear(hidden_dim, hidden_dim)
-        self.value = nn.Linear(hidden_dim, hidden_dim)
+        # self.query = nn.Linear(hidden_dim, hidden_dim)
+        # self.key = nn.Linear(hidden_dim, hidden_dim)
+        # self.value = nn.Linear(hidden_dim, hidden_dim)
+        self.proj_Q = nn.Linear(hidden_dim, hidden_dim, bias=False)
+        self.proj_K = nn.Linear(hidden_dim, hidden_dim, bias=False)
+        self.proj_V = nn.Linear(hidden_dim, hidden_dim, bias=False)
 
       
     """
@@ -34,19 +38,36 @@ class SelfAttention(nn.Module):
     """
     def forward(self, x):
         # input shape: [batch_size, seq_len, hidden_dim]
+        print(f'Shape: {x.shape}')
+        
         # step 0: get the Q, K, V representations of the input
-        Q = self.query(x)
-        K = self.key(x)
-        V = self.value(x)
+        Q = self.proj_Q(x)
+        print(f'Query shape: {Q.shape}')
+        print(f'1, 15, 128 where 15 is the number of words and 128 is the hidden dimension vector')
+        
+        K = self.proj_K(x)
+        print(f'Key shape: {K.shape}')
+        
+        V = self.proj_V(x)
+        print(f'Value shape: {V.shape}')
+        
         # step 1: similarity matrix, Q K 
         similarity = torch.bmm(Q, K.transpose(1, 2))
+        print(f'Similarity shape: {similarity.shape}')
+        
         # step 2: divide that by the magic number
         similarity = similarity / math.sqrt(self.hidden_dim)
+        
         # step 3: do the sofftmax
         similarity = torch.softmax(similarity, dim=-1)
+        
         # step 4: get the weighted sum
         output = torch.bmm(similarity, V)
+        print(f'Output shape: {output.shape}')
+        # output shape: [batch_size, 15, 128]
+
         return output
+        
 
 
 class TransformerBlock(nn.Module):
