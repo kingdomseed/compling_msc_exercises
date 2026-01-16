@@ -5,14 +5,48 @@ import math
 class SelfAttention(nn.Module):
     """
     Single-head self-attention mechanism with manual QKV computation.
+    Tries to represent the current token by the fused knowledge 
+    of the other tokens (weighted sum). This is what it tries to learn.
+    Input Shape: [batch_size, seq_len, hidden_dim]
+    For self-attention we need to initialization at least three
+    Linear projection modules. (in_features=green, out_features=hidden_dim)
+    For forward pass 
     """
     def __init__(self, hidden_dim):
         super().__init__()
-        raise NotImplementedError('Self-Attention is not implemented!')
+        # initialize three linear project modules
+        # in the slide, it should be nn.Linear(in_features=3, out_features=3)
+        self.hidden_dim = hidden_dim
+        self.query = nn.Linear(hidden_dim, hidden_dim)
+        self.key = nn.Linear(hidden_dim, hidden_dim)
+        self.value = nn.Linear(hidden_dim, hidden_dim)
 
-    
+      
+    """
+    For forward pass we need to do dot product: Q: [batch_size, seq_len, dim_q]
+    K: [batch_size, seq_len, dim_k]
+    dot product between every vector in q lists and k lists. 
+    Output: [batch_size, seq_len, seq_len]
+    Transpose second vector--switching these two dimensions then the first
+    one the shape won't change but we get the transpose of the second
+    [seq_len, dim_q] x [seq_len, dim_k] -> [seq_len, seq_len]
+    To understand the shape of softmax we must get the goal. 
+    """
     def forward(self, x):
-        raise NotImplementedError('Self-Attention is not implemented!')
+        # input shape: [batch_size, seq_len, hidden_dim]
+        # step 0: get the Q, K, V representations of the input
+        Q = self.query(x)
+        K = self.key(x)
+        V = self.value(x)
+        # step 1: similarity matrix, Q K 
+        similarity = torch.bmm(Q, K.transpose(1, 2))
+        # step 2: divide that by the magic number
+        similarity = similarity / math.sqrt(self.hidden_dim)
+        # step 3: do the sofftmax
+        similarity = torch.softmax(similarity, dim=-1)
+        # step 4: get the weighted sum
+        output = torch.bmm(similarity, V)
+        return output
 
 
 class TransformerBlock(nn.Module):

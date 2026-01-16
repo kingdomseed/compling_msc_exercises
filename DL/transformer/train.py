@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 from dataset import get_dataloader
@@ -42,7 +43,8 @@ def train(model, data, optimizer, criterion, epochs, checkpoint_path):
                     'use_attention': model.use_attention}, checkpoint_path)
 
 if __name__ == "__main__":
-    csv_file = "toy_dataset.csv"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_file = os.path.join(script_dir, "toy_dataset.csv")
     dataloader = get_dataloader(csv_file, batch_size=1, shuffle=False)
     
     data = []
