@@ -132,3 +132,10 @@ recall = metric_recall.compute()
 
 print(f'Precision: {precision:.4f}, '
       f'Recall: {recall:.4f}')
+print(f'dataset_test.class_to_idx: {dataset_test.class_to_idx}')
+
+# Dictioanry comprehension to get per class recall
+# k: recall[v].itemO
+#     for k, v
+#     in dataset_test.class_to_idx.items()
+# } # get per class recall
