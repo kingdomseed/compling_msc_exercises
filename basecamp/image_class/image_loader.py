@@ -10,7 +10,6 @@ from torch.utils.data import DataLoader
 
 from torchmetrics import Recall, Precision
 
-
 # We must convert images to tensors and apply
 # a transformation to normalize them.
 train_transforms = transforms.Compose([
