@@ -23,21 +23,25 @@ def find_happiest(file):
         'North America': 'Canada',
         ... }
     """
-    with open(file, newline="", encoding='utf-8', ) as happiness_report:
+    with open(file, newline="", encoding="utf-8") as happiness_report:
         rows = list(csv.reader(happiness_report))  # rows: list[list[str]]
         for row in rows:  # row: list[str]
             continent = row[3]  # continent_name
             country = row[1]  # country_name
             score = float(row[2])  # score
+
             if continent not in happiest_per_continent:
                 happiest_per_continent[continent] = (score, country)
             elif score > happiest_per_continent[continent][0]:
                 happiest_per_continent[continent] = (score, country)
-        print(happiest_per_continent)
         sorted_results = sorted(
             happiest_per_continent.items(),
             key=lambda x: x[1][0],
             reverse=True
         )
-        print(sorted_results)
-    return sorted_results
+
+        result = {}
+        for continent, (score, country) in sorted_results:
+            result[continent] = country
+
+    return result

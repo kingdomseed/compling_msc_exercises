@@ -8,9 +8,7 @@ def test_toy_happiness_europe_only():
     toy_file = here / "toy_happiness.txt"
 
     result = find_happiest(str(toy_file))
-
-    # result is a list of tuples: [(continent, (score, country)), ...]
-    assert result == [("Europe", (7.537, "Norway"))]
+    assert result == {"Europe": "Norway"}
 
 
 if __name__ == "__main__":
