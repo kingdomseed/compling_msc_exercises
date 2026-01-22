@@ -1,0 +1,2 @@
+1,Norway,7.537,Europe
+2,Denmark,7.526,Europe
