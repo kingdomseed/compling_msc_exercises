@@ -1,5 +1,3 @@
-
-
 def decipher(msg, perm):
     """Deciphers a message using a given permutation.
     Args:
@@ -10,9 +8,16 @@ def decipher(msg, perm):
     """
     alphabet = "abcdefghijklmnopqrstuvwxyz"
 
+    # Create a dictionary mapping each letter in the permutation
+    # to the alphabet
+    mapping = {perm[i]: alphabet[i] for i in range(len(alphabet))}
 
-perm = "wnoegbjpkyxlfiuastqhvmcrzd"
-print(decipher("wnoeg", perm))
-print(decipher("rzd", perm))
-print(decipher("azhpui", perm))
-print(decipher("hpg ntuci bur yvfaq umgt hpg euj", perm))
+    # Use the mapping to decipher the message
+    deciphered_msg = ""
+    for char in msg:
+        if char in mapping:
+            deciphered_msg += mapping[char]
+        else:
+            deciphered_msg += char
+
+    return deciphered_msg
