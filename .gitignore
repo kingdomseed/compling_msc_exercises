@@ -21,3 +21,6 @@ DL/ex9/lstm_30fps/4-scheduler-training-pipeline.mp4
 basecamp/image_class/clouds_test/
 basecamp/image_class/clouds_train/
 basecamp/electricity/electricity_seq_data/LD2011_2014.txt
+-e 
+# Ignore semester_1_dl_project subdirectory (separate git repo)
+semester_1_dl_project/
